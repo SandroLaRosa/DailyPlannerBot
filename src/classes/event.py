@@ -13,7 +13,7 @@ class Event:
         self.id             = event_id or str(uuid.uuid4())
         self.name           = name
         self.start_date     = start_date
-        end_date            = end_date
+        self.end_date            = end_date
         self.description    = description
         self.is_active      = is_active
     
@@ -86,7 +86,6 @@ def relativedelta_to_dict(rd: relativedelta)->dict:
     return {
         "years":    rd.years,
         "months":   rd.months,
-        "weeks":    rd.weeks,
         "days":     rd.days,
         "hours":    rd.hours,
         "minutes":  rd.minutes,
@@ -97,7 +96,6 @@ def relativedelta_from_dict(d: dict)->relativedelta:
     return relativedelta(
         years=d.get("years", 0),
         months=d.get("months", 0),
-        weeks=d.get("weeks", 0),
         days=d.get("days", 0),
         hours=d.get("hours", 0),
         minutes=d.get("minutes", 0),

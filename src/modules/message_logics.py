@@ -1,48 +1,45 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from modules.lang_logics import MSG
 
-# Text 
+DIC = MSG["unsupported"]
+
+# Text
 
 async def unknown_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
-        f"Hai scritto: \\{update.message.text}.\n"
-        "Non conosco comandi corrispondenti.\n"
-        "Per una lista dei comandi disponibili consulta /help."
+        DIC["unknown_command"].format(command=update.message.text)
     )
 
 async def plain_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text(
-        "Non sono ancora in grado di elaborare messaggi.\n"
-        "Usa uno dei comandi disponibili. Per la lista consulta /help."
-    )
+    await update.message.reply_text(DIC["plain_text"])
 
 # Media
 
 async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Il bot non supporta attualmente l'invio di immagini.")
+    await update.message.reply_text(DIC["photo"])
 
 async def audio_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Il bot non supporta attualmente l'invio di audio.")
+    await update.message.reply_text(DIC["audio"])
 
 async def voice_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Il bot non supporta attualmente i messaggi vocali.")
+    await update.message.reply_text(DIC["voice"])
 
 async def video_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Il bot non supporta attualmente l'invio di video.")
+    await update.message.reply_text(DIC["video"])
 
 async def document_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Il bot non supporta attualmente l'invio di documenti.")
+    await update.message.reply_text(DIC["document"])
 
 async def sticker_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Il bot non supporta attualmente gli sticker.")
+    await update.message.reply_text(DIC["sticker"])
 
 async def location_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Il bot non supporta attualmente la condivisione di posizione.")
+    await update.message.reply_text(DIC["location"])
 
 async def contact_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Il bot non supporta attualmente la condivisione di contatti.")
-
+    await update.message.reply_text(DIC["contact"])
 
 if __name__ == "__main__":
     pass

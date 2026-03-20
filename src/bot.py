@@ -1,6 +1,7 @@
 import os
 import logging
 from dotenv import load_dotenv
+load_dotenv()
 
 from telegram import Update
 from telegram.ext import Application
@@ -8,6 +9,7 @@ from telegram.ext import Application
 from classes.event_manager import EventManager
 
 from modules.handler_manager import load     # just refactored, but yet to test
+from modules.lang_logics import set_lang
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -16,7 +18,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def main()->None:
-    load_dotenv()
     token= os.getenv("TOKEN")
     if not token:
         logger.critical("TOKEN not found. Please verify that your .env file has been properly created.")

@@ -10,7 +10,7 @@ from modules import command_logics, message_logics #, conversation_logics
 #       reminder: '/' is not needed
 
 COMMAND_HANDLERS = [
-    ("start", command_logics.start)
+    ("start", command_logics.start),
     ("help", command_logics.help)
 ]
 

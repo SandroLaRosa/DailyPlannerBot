@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application
 
-#from modules import handler-loader    <- codice già scritto in sandrodev, ma da pulire
+from classes.event_manager import EventManager
+
+from modules import handler_manager    # just refactored, but yet to test
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -20,8 +22,9 @@ def main()->None:
         logger.critical("TOKEN not found. Please verify that your .env file has been properly created.")
         raise ValueError("Missing Telegram bot Token.")
     app=Application.builder().token(token).build()
+    app.bot_data["event_manager"]=EventManager()
 
-    # TODO:     Refactor the event_manager code in sandrodev branch which is not currently working
+    # DONE:     Refactor the event_manager code in sandrodev branch which is not currently working
     #           once the implementation is stable insert its logic here to ensure that the bot and
     #           the event manager can properly interact.
 

@@ -1,8 +1,8 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from classes.event import Event
 from classes.event_manager import EventManager
+from modules.notify import notify_event
 
 async def start(update:Update, context:ContextTypes.DEFAULT_TYPE)->None:
     em: EventManager = context.bot_data["event_manager"]
@@ -14,7 +14,7 @@ async def start(update:Update, context:ContextTypes.DEFAULT_TYPE)->None:
         "Fammi controllare se dall'ultima sessione hai perso qualche evento."
     )
     for ev in valid:
-        em.schedule(ev, context.application, notify_event) #TODO scrivere notify event
+        em.schedule(ev, context.application, notify_event)
     if missed:
         lines = ["Mentre il server era offline hai perso questi eventi:\n"]
         for ev in missed:
@@ -22,9 +22,6 @@ async def start(update:Update, context:ContextTypes.DEFAULT_TYPE)->None:
         await update.message.reply_text("\n".join(lines))
     else:
         await update.message.reply_text("Perfetto nessun messaggio perso dall'ultima sessione")
-    
-    
-
 
 if __name__ =="__main__":
     pass

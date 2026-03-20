@@ -7,7 +7,7 @@ from telegram.ext import Application
 
 from classes.event_manager import EventManager
 
-from modules import handler_manager    # just refactored, but yet to test
+from modules.handler_manager import load     # just refactored, but yet to test
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -31,6 +31,7 @@ def main()->None:
     # TODO v2:  Refactor the handlers and their loader
     #           here we shall have code like:
     #           handlers.load(app)
+    load(app)
 
     logger.info("Bot started successfully. Polling for updates...")
     app.run_polling(allowed_updates=Update.ALL_TYPES)

@@ -37,7 +37,7 @@ def save_json(events: list[Event], fpath: str) -> None:
 def append_json(event: Event, fpath: str) -> None:
     record = load_json(fpath)
     record.append(event.to_dict())
-    ensure_data_dir
+    ensure_data_dir()
     with open(fpath, "w", encoding="utf-8") as f:
         json.dump(record,f,indent=2,ensure_ascii=False)
 
@@ -59,11 +59,11 @@ class EventManager:
             except (KeyError, ValueError):
                 continue
 
-        if instance <= now:
-            missed.append(instance)
-        else:
-            ongoing.append(instance)
-            self.events[instance.id] = instance
+            if instance <= now:
+                missed.append(instance)
+            else:
+                ongoing.append(instance)
+                self.events[instance.id] = instance
         
         for instance in missed:
             append_json(instance, MISSED_FILE)
@@ -114,7 +114,7 @@ class EventManager:
         event.set_start(new_start)
         event.set_end(new_end)
         self.schedule(event, app, callback)
-        self.save_ongoing
+        self.save_ongoing()
     
     def remove_event(self, event_id:str, app:Application)->None:
         event=self.events.get(event_id)
@@ -122,4 +122,4 @@ class EventManager:
             return
         self.deschedule(event,app)
         self.events.pop(event_id)
-        self.save_ongoing
+        self.save_ongoing()

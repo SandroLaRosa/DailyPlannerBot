@@ -2,14 +2,15 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 # TODO: refactor the code in sandrodev to reflect the new handler logics
 #       then uncomment the next import:
-#from modules import command_logics, message_logics, conversation_logics
+
+from modules import command_logics #, message_logics, conversation_logics
 
 # TODO: add new command handlers here as their functions are ready
 #       scheme (command, function)
 #       reminder: '/' is not needed
 
 COMMAND_HANDLERS = [
-
+("start", command_logics.start)
 ]
 
 # TODO: add new message handlers here as their functions are ready

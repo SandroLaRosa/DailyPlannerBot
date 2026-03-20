@@ -1,0 +1,23 @@
+{
+    "start": {
+        "greeting": "Ciao {name}.\nGrazie per aver scelto \"DailyPlannerBot\" per la gestione della tua agenda\nFammi controllare se dall'ultima sessione hai perso qualche evento.",
+        "checking_missed": "Mentre il server era offline hai perso questi eventi:\n",
+        "missed_item": "*\t{message}",
+        "no_missed": "Perfetto, nessun messaggio perso dall'ultima sessione."
+    },
+    "help":{
+        "command_list": "Certo, ecco una lista dei comandi disponibili:\n"
+    },
+    "unsupported": {
+        "unknown_command": "Hai scritto: {command}.\nNon conosco comandi corrispondenti.\nPer una lista dei comandi disponibili consulta /help.",
+        "plain_text": "Non sono ancora in grado di elaborare messaggi.\nUsa uno dei comandi disponibili. Per la lista consulta /help.",
+        "photo":    "Il bot non supporta attualmente l'invio di immagini.",
+        "audio":    "Il bot non supporta attualmente l'invio di audio.",
+        "voice":    "Il bot non supporta attualmente i messaggi vocali.",
+        "video":    "Il bot non supporta attualmente l'invio di video.",
+        "document": "Il bot non supporta attualmente l'invio di documenti.",
+        "sticker":  "Il bot non supporta attualmente gli sticker.",
+        "location": "Il bot non supporta attualmente la condivisione di posizione.",
+        "contact":  "Il bot non supporta attualmente la condivisione di contatti."
+    }
+}

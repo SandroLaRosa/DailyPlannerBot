@@ -1,0 +1,23 @@
+{
+    "start": {
+        "greeting": "Hi {name}.\nThank you very much for choosing \"DailyPlannerBot\" as your task manager.\nLet me check if you've missed out any appointment while the server was down.",
+        "checking_missed": "Ops, while the server was down you missed those events:\n",
+        "missed_item": "*\t{message}",
+        "no_missed": "Perfect, no event was missed."
+    },
+    "help":{
+        "command_list": "Those are the command i support:\n"
+    },
+    "unsupported": {
+        "unknown_command": "You wrote: {command}.\nI don't know any command with that name.\nPlease consult /help for a list with all supported commands.",
+        "plain_text": "I am a simple bot, i can't yet understand natural language.\nPlease use a pre-defined command to interact with me. For a complete list use /help.",
+        "photo":    "Something went wrong, maybe it's because i have no eyes to see images ...",
+        "audio":    "Bruh, i can't hear...",
+        "voice":    "Really? do you think i can get that?.",
+        "video":    "So much bytes for wasted for something i can't process...",
+        "document": "Really, really clever... now try to resume it in a few words and i'll be sure to not answer.",
+        "sticker":  "wow...",
+        "location": "Nice, go there first, i'll reach you when i'll be able to walk",
+        "contact":  "No thanks, i have already a partner"
+    }
+}

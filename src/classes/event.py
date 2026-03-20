@@ -147,12 +147,48 @@ class RecurringEvent(Event):
             is_active              = data.get("is_active", True),
             event_id               = data["id"]
         )
+
+class Reminder(Event):
+    TYPE = "reminder"
+    def __init__(self, name:str, start_date:datetime, description:str, is_active:bool = True, event_id: Optional[str] = None):
+        super.__init__(name, start_date, end_date=start_date, description=description, is_active=is_active, event_id=event_id)
+    def set_end(self, new_value):
+        return AttributeError("Reminder has no end date.")
     
+    def get_message(self) -> str:
+        start_str = self.start_date.strftime("%d/%m/%Y %H:%M")
+        return "\n".join([
+            f"{self.name}",
+            f"alle:\t{start_str}",
+            f"{self.description}",
+        ])
+    
+    def to_dict(self) -> dict:
+        return {
+            "type":         self.TYPE,
+            "id":           self.id,
+            "name":         self.name,
+            "start_date":   self.start_date.isoformat(),
+            "description":  self.description,
+            "is_active":    self.is_active,
+        }
+ 
+    @classmethod
+    def from_dict(cls, data: dict) -> Reminder:
+        return cls(
+            name        = data["name"],
+            start_date  = datetime.fromisoformat(data["start_date"]),
+            description = data["description"],
+            is_active   = data.get("is_active", True),
+            event_id    = data["id"],
+        )
+
 # Generic event Loader from JSON
 
 Registry: dict[str, type[Event]]={
     Event.TYPE:             Event,
     RecurringEvent.TYPE:    RecurringEvent,
+    Reminder.TYPE:          Reminder
 }
 
 def event_from_dict(data: dict)->Event:

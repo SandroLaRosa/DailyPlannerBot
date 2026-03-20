@@ -23,5 +23,11 @@ async def start(update:Update, context:ContextTypes.DEFAULT_TYPE)->None:
     else:
         await update.message.reply_text("Perfetto nessun messaggio perso dall'ultima sessione")
 
+async def help(update:Update, context:ContextTypes.DEFAULT_TYPE)->None:
+    await update.message.reply_text(
+        "Ecco una lista dei comandi che supporto:\n"
+        #TODO Update this section everytime an handler is implemented
+    )
+
 if __name__ =="__main__":
     pass

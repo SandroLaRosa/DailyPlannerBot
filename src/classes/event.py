@@ -151,7 +151,7 @@ class RecurringEvent(Event):
 class Reminder(Event):
     TYPE = "reminder"
     def __init__(self, name:str, start_date:datetime, description:str, is_active:bool = True, event_id: Optional[str] = None):
-        super.__init__(name, start_date, end_date=start_date, description=description, is_active=is_active, event_id=event_id)
+        super().__init__(name, start_date, end_date=start_date, description=description, is_active=is_active, event_id=event_id)
     def set_end(self, new_value):
         return AttributeError("Reminder has no end date.")
     

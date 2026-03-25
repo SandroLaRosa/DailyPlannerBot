@@ -6,6 +6,8 @@ import os
 from datetime import datetime
 from typing import Callable
 
+from modules.timezone_logics import TZ
+
 from telegram.ext import Application
 
 from classes.event import Event, RecurringEvent, event_from_dict
@@ -49,7 +51,7 @@ class EventManager:
         self.events: dict[str, Event] = {}
     
     def load_ongoing(self) -> tuple[list[Event], list[Event]]:
-        now = datetime.now()
+        now = datetime.now(TZ)
         missed: list[Event] = []
         ongoing: list[Event] = []
 

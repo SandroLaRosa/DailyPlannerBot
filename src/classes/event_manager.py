@@ -59,7 +59,7 @@ class EventManager:
             except (KeyError, ValueError):
                 continue
 
-            if instance <= now:
+            if instance.start_date <= now:
                 missed.append(instance)
             else:
                 ongoing.append(instance)

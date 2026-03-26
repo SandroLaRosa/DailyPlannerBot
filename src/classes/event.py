@@ -79,8 +79,6 @@ class Event:
             is_active       = data.get("is_active", True),
             event_id        = data["id"]
         )
-    
-# TODO :    Test the I/O from files of both classes
 
 # helpers specific to subclass time management-----------------
 
@@ -129,7 +127,7 @@ class RecurringEvent(Event):
 
     def get_message(self):
         baseline = super().get_message()
-        return baseline + f"\n Remaining ripetition {self.remaining_occurrences}."
+        return baseline + f"\n Remaining ripetition {self.remaining_occurrences-1}."
 
     def to_dict(self)->dict:
         data = super().to_dict()

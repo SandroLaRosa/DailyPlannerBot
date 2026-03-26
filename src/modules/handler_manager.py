@@ -3,7 +3,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 # TODO: refactor the code in sandrodev to reflect the new handler logics
 #       then uncomment the next import:
 
-from modules import command_logics, message_logics #, conversation_logics
+from modules import command_logics, message_logics, conversation_logics
 
 # TODO: add new command handlers here as their functions are ready
 #       scheme (command, function)
@@ -32,7 +32,7 @@ MESSAGE_HANDLERS = [
 
 # TODO: add new conversation handlers here as their functions are ready
 CONVERSATION_HANDLERS = [
-
+    conversation_logics.add_event_handler
 ]
 
 

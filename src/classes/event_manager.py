@@ -6,6 +6,9 @@ import os
 from datetime import datetime
 from typing import Callable
 
+from modules.timezone_logics import TZ
+from modules.lang_logics import MSG
+
 from telegram.ext import Application
 
 from classes.event import Event, RecurringEvent, event_from_dict
@@ -49,7 +52,7 @@ class EventManager:
         self.events: dict[str, Event] = {}
     
     def load_ongoing(self) -> tuple[list[Event], list[Event]]:
-        now = datetime.now()
+        now = datetime.now(TZ)
         missed: list[Event] = []
         ongoing: list[Event] = []
 
@@ -59,7 +62,7 @@ class EventManager:
             except (KeyError, ValueError):
                 continue
 
-            if instance <= now:
+            if instance.start_date <= now:
                 missed.append(instance)
             else:
                 ongoing.append(instance)
@@ -96,13 +99,15 @@ class EventManager:
         self.schedule(event, app, callback)
         self.save_ongoing()
     
-    def expire_event(self, event_id: str) -> None:
+    def expire_event(self, event_id: str, app: Application = None, callback: Callable = None) -> None:
         event = self.events.get(event_id)
         if event is None:
             return
         if isinstance(event, RecurringEvent):
             event.decrease_occurrences()
             if event.is_active:
+                if app and callback:
+                    self.schedule(event, app, callback)
                 self.save_ongoing()
                 return
         event.expire()

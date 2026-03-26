@@ -6,6 +6,10 @@ from modules.notify import notify_event
 from modules.lang_logics import MSG
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    context.bot_data["chat_id"] = update.effective_chat.id
+    if context.bot_data["chat_id"] is None:
+        return
+
     em: EventManager = context.bot_data["event_manager"]
     valid, missed = em.load_ongoing()
 

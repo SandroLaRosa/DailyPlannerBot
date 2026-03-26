@@ -6,6 +6,8 @@ from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 
+from modules.timezone_logics import TZ
+
 class Event:
     TYPE="single_time"
 
@@ -71,8 +73,8 @@ class Event:
     def from_dict(cls, data:dict)->Event:
         return cls(
             name            = data["name"],
-            start_date      = datetime.fromisoformat(data["start_date"]),
-            end_date        = datetime.fromisoformat(data["end_date"]),
+            start_date      = datetime.fromisoformat(data["start_date"]).replace(tzinfo=TZ),
+            end_date        = datetime.fromisoformat(data["end_date"]).replace(tzinfo=TZ),
             description     = data.get("description"),
             is_active       = data.get("is_active", True),
             event_id        = data["id"]
@@ -139,8 +141,8 @@ class RecurringEvent(Event):
     def from_dict(cls, data:dict)->RecurringEvent:
         return cls(
             name                   = data["name"],
-            start_date             = datetime.fromisoformat(data["start_date"]),
-            end_date               = datetime.fromisoformat(data["end_date"]),
+            start_date             = datetime.fromisoformat(data["start_date"]).replace(tzinfo=TZ),
+            end_date               = datetime.fromisoformat(data["end_date"]).replace(tzinfo=TZ),
             period                 = relativedelta_from_dict(data["period"]),
             remaining_occurrences  = data["remaining_occurrences"],
             description            = data.get("description"),
@@ -151,7 +153,7 @@ class RecurringEvent(Event):
 class Reminder(Event):
     TYPE = "reminder"
     def __init__(self, name:str, start_date:datetime, description:str, is_active:bool = True, event_id: Optional[str] = None):
-        super.__init__(name, start_date, end_date=start_date, description=description, is_active=is_active, event_id=event_id)
+        super().__init__(name, start_date, end_date=start_date, description=description, is_active=is_active, event_id=event_id)
     def set_end(self, new_value):
         return AttributeError("Reminder has no end date.")
     
@@ -177,7 +179,7 @@ class Reminder(Event):
     def from_dict(cls, data: dict) -> Reminder:
         return cls(
             name        = data["name"],
-            start_date  = datetime.fromisoformat(data["start_date"]),
+            start_date  = datetime.fromisoformat(data["start_date"]).replace(tzinfo=TZ),
             description = data["description"],
             is_active   = data.get("is_active", True),
             event_id    = data["id"],

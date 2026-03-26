@@ -14,4 +14,4 @@ async def notify_event(context:ContextTypes.DEFAULT_TYPE)->None:
         text=f"{event.get_message()}",
     )
 
-    em.expire_event(event_id)
+    em.expire_event(event_id,  app=context.application, callback=notify_event)

@@ -79,8 +79,6 @@ class Event:
             is_active       = data.get("is_active", True),
             event_id        = data["id"]
         )
-    
-# TODO :    Test the I/O from files of both classes
 
 # helpers specific to subclass time management-----------------
 
@@ -129,7 +127,7 @@ class RecurringEvent(Event):
 
     def get_message(self):
         baseline = super().get_message()
-        return baseline + f"\n Remaining ripetition {self.remaining_occurrences}."
+        return baseline + f"\n Remaining ripetition {self.remaining_occurrences-1}."
 
     def to_dict(self)->dict:
         data = super().to_dict()
@@ -155,7 +153,7 @@ class Reminder(Event):
     def __init__(self, name:str, start_date:datetime, description:str, is_active:bool = True, event_id: Optional[str] = None):
         super().__init__(name, start_date, end_date=start_date, description=description, is_active=is_active, event_id=event_id)
     def set_end(self, new_value):
-        return AttributeError("Reminder has no end date.")
+        raise AttributeError("Reminder has no end date.")
     
     def get_message(self) -> str:
         start_str = self.start_date.strftime("%d/%m/%Y %H:%M")

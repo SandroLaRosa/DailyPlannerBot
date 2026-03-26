@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Callable
 
 from modules.timezone_logics import TZ
+from modules.lang_logics import MSG
 
 from telegram.ext import Application
 
@@ -98,13 +99,15 @@ class EventManager:
         self.schedule(event, app, callback)
         self.save_ongoing()
     
-    def expire_event(self, event_id: str) -> None:
+    def expire_event(self, event_id: str, app: Application = None, callback: Callable = None) -> None:
         event = self.events.get(event_id)
         if event is None:
             return
         if isinstance(event, RecurringEvent):
             event.decrease_occurrences()
             if event.is_active:
+                if app and callback:
+                    self.schedule(event, app, callback)
                 self.save_ongoing()
                 return
         event.expire()

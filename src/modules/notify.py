@@ -4,6 +4,8 @@ from classes.event_manager import EventManager
 
 
 async def notify_event(context: ContextTypes.DEFAULT_TYPE) -> None:
+    assert context.job is not None
+    assert isinstance(context.job.data, str)
     event_id: str = context.job.data
     em: EventManager = context.bot_data["event_manager"]
     chat_id: int = context.bot_data["chat_id"]

@@ -7,6 +7,7 @@ from modules.notify import notify_event
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    assert update.effective_chat and update.message and update.effective_user
     context.bot_data["chat_id"] = update.effective_chat.id
     if context.bot_data["chat_id"] is None:
         return
@@ -30,7 +31,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(MSG["start"]["no_missed"])
 
 
-async def help(update: Update) -> None:
+async def help(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
+    assert update.effective_chat and update.message and update.effective_user
     await update.message.reply_text(
         MSG["help"]["command_list"].format(name=update.effective_user.first_name)
     )

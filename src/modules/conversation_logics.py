@@ -6,13 +6,8 @@ from datetime import datetime
 from dateutil import parser as dtparser
 from dateutil.relativedelta import relativedelta
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
-from telegram.ext import (
-    CommandHandler,
-    ContextTypes,
-    ConversationHandler,
-    MessageHandler,
-    filters,
-)
+from telegram.ext import (CommandHandler, ContextTypes, ConversationHandler,
+                          MessageHandler, filters)
 
 from classes.event import Event, RecurringEvent, Reminder
 from classes.event_manager import EventManager
@@ -34,25 +29,25 @@ from modules.timezone_logics import TZ
 ) = range(10)
 
 # Custom Keyboards
-YES_NO = ReplyKeyboardMarkup(
+YES_NO_KEY = ReplyKeyboardMarkup(
     [["Sì", "No"]],
     one_time_keyboard=True,
     resize_keyboard=True,
 )
 
-EVENT_TYPE = ReplyKeyboardMarkup(
+EVENT_TYPE_KEY = ReplyKeyboardMarkup(
     [["Evento", "Evento ricorrente", "Promemoria"]],
     one_time_keyboard=True,
     resize_keyboard=True,
 )
 
-PERIOD = ReplyKeyboardMarkup(
+PERIOD_KEY = ReplyKeyboardMarkup(
     [["giornaliero", "settimanale"], ["mensile", "annuale"], ["custom"]],
     one_time_keyboard=True,
     resize_keyboard=True,
 )
 
-CONFIRM = ReplyKeyboardMarkup(
+CONFIRM_KEY = ReplyKeyboardMarkup(
     [["Conferma", "Annulla"]],
     one_time_keyboard=True,
     resize_keyboard=True,
@@ -101,12 +96,37 @@ DURATION_RE = re.compile(
 
 
 def _parse_duration(text: str) -> relativedelta | None:
-    kwargs: dict[str, int] = {}
+    years = months = weeks = days = hours = minutes = seconds = 0
+    found = False
     for match in DURATION_RE.finditer(text):
         amount = int(match.group(1))
         unit = UNIT_MAP[match.group(2).lower()]
-        kwargs[unit] = kwargs.get(unit, 0) + amount
-    return relativedelta(**kwargs) if kwargs else None
+        found = True
+        if unit == "years":
+            years += amount
+        elif unit == "months":
+            months += amount
+        elif unit == "weeks":
+            weeks += amount
+        elif unit == "days":
+            days += amount
+        elif unit == "hours":
+            hours += amount
+        elif unit == "minutes":
+            minutes += amount
+        elif unit == "seconds":
+            seconds += amount
+    if not found:
+        return None
+    return relativedelta(
+        years=years,
+        months=months,
+        weeks=weeks,
+        days=days,
+        hours=hours,
+        minutes=minutes,
+        seconds=seconds,
+    )
 
 
 def _is_yes(text: str) -> bool:
@@ -132,11 +152,24 @@ def _format_period(rd: relativedelta) -> str:
     return ", ".join(parts) if parts else "—"
 
 
+def _user_data(context: ContextTypes.DEFAULT_TYPE) -> dict:
+    """Return user_data, asserting it is not None."""
+    assert context.user_data is not None
+    return context.user_data
+
+
+def _text(update: Update) -> str:
+    """Return message text, asserting both message and text are not None."""
+    assert update.message is not None and update.message.text is not None
+    return update.message.text
+
+
 # Start
 async def start_event_creation(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
-    context.user_data.clear()
+    assert update.effective_chat and update.message and update.effective_user
+    _user_data(context).clear()
     await update.message.reply_text(
         f"Ok {update.effective_user.first_name}, creiamo un nuovo evento.\n"
         "Come si chiama l'evento?",
@@ -146,51 +179,54 @@ async def start_event_creation(
 
 
 async def get_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    context.user_data["name"] = update.message.text.strip()
+    assert update.effective_chat and update.message and update.effective_user
+    _user_data(context)["name"] = _text(update).strip()
     await update.message.reply_text(
         "Che tipo di evento vuoi creare?",
-        reply_markup=EVENT_TYPE,
+        reply_markup=EVENT_TYPE_KEY,
     )
     return EVENT_TYPE
 
 
 async def get_event_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    choice = update.message.text.strip().lower()
+    assert update.effective_chat and update.message and update.effective_user
+    choice = _text(update).strip().lower()
 
     if choice == "evento":
-        context.user_data["event_type"] = "single"
+        _user_data(context)["event_type"] = "single"
     elif choice == "evento ricorrente":
-        context.user_data["event_type"] = "recurring"
+        _user_data(context)["event_type"] = "recurring"
     elif choice == "promemoria":
-        context.user_data["event_type"] = "reminder"
+        _user_data(context)["event_type"] = "reminder"
     else:
         await update.message.reply_text(
             "Scegli una delle opzioni disponibili.",
-            reply_markup=EVENT_TYPE,
+            reply_markup=EVENT_TYPE_KEY,
         )
         return EVENT_TYPE
 
     await update.message.reply_text(
-        "Quando inizia?\n(es. 25/06/2025 15:00  oppure  25 giugno 2025 15:00)",
+        "Quando inizia?\n(es. 25/06/2025 15:00)",
         reply_markup=ReplyKeyboardRemove(),
     )
     return START_DATE
 
 
 async def get_start_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    dt = _parse_future_dt(update.message.text)
+    assert update.effective_chat and update.message and update.effective_user
+    dt = _parse_future_dt(_text(update))
     if dt is None:
         await update.message.reply_text(
             "Non ho capito la data, riprova.\n"
             "Controlla che sia una data futura!!!\n"
-            "Usa il formato: 25/06/2025 15:00  oppure  25 giugno 2025 15:00"
+            "Usa il formato: 25/06/2026 15:00"
         )
         return START_DATE
 
-    context.user_data["start_date"] = dt
+    _user_data(context)["start_date"] = dt
 
     # Reminder has no end date and needs a description
-    if context.user_data["event_type"] == "reminder":
+    if _user_data(context)["event_type"] == "reminder":
         await update.message.reply_text(
             "Inserisci una descrizione per il promemoria:",
             reply_markup=ReplyKeyboardRemove(),
@@ -202,13 +238,13 @@ async def get_start_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 async def get_end_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    start: datetime = context.user_data["start_date"]
-    dt = _parse_future_dt(update.message.text)
+    assert update.effective_chat and update.message and update.effective_user
+    start: datetime = _user_data(context)["start_date"]
+    dt = _parse_future_dt(_text(update))
 
     if dt is None:
         await update.message.reply_text(
-            "Non ho capito la data, riprova.\n"
-            "Usa il formato: 25/06/2025 18:00  oppure  25 giugno 2025 18:00"
+            "Non ho capito la data, riprova.\n" "Usa il formato: 25/06/2025 18:00"
         )
         return END_DATE
 
@@ -218,10 +254,10 @@ async def get_end_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         )
         return END_DATE
 
-    context.user_data["end_date"] = dt
+    _user_data(context)["end_date"] = dt
     await update.message.reply_text(
         "Vuoi aggiungere una descrizione?",
-        reply_markup=YES_NO,
+        reply_markup=YES_NO_KEY,
     )
     return HAS_DESCRIPTION
 
@@ -229,10 +265,11 @@ async def get_end_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 async def get_has_description(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
-    answer = update.message.text.strip().lower()
+    assert update.effective_chat and update.message and update.effective_user
+    answer = _text(update).strip().lower()
 
     if _is_no(answer):
-        context.user_data["description"] = None
+        _user_data(context)["description"] = None
         return await _after_description(update, context)
 
     if _is_yes(answer):
@@ -242,17 +279,21 @@ async def get_has_description(
         )
         return DESCRIPTION
 
-    await update.message.reply_text("Rispondi con 'Sì' o 'No'.", reply_markup=YES_NO)
+    await update.message.reply_text(
+        "Rispondi con 'Sì' o 'No'.", reply_markup=YES_NO_KEY
+    )
     return HAS_DESCRIPTION
 
 
 async def get_description(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    context.user_data["description"] = update.message.text.strip()
+    assert update.effective_chat and update.message and update.effective_user
+    _user_data(context)["description"] = _text(update).strip()
     return await _after_description(update, context)
 
 
 async def _after_description(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    if context.user_data["event_type"] == "recurring":
+    assert update.effective_chat and update.message and update.effective_user
+    if _user_data(context)["event_type"] == "recurring":
         await update.message.reply_text(
             "Quante volte si ripete l'evento? (inserisci un numero in cifre)",
             reply_markup=ReplyKeyboardRemove(),
@@ -262,59 +303,63 @@ async def _after_description(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 
 async def get_frequency(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    assert update.effective_chat and update.message and update.effective_user
     try:
-        freq = int(update.message.text.strip())
+        freq = int(_text(update).strip())
         if freq <= 0:
             raise ValueError
     except ValueError:
         await update.message.reply_text("Inserisci un numero intero positivo.")
         return FREQ
 
-    context.user_data["freq"] = freq
+    _user_data(context)["freq"] = freq
     await update.message.reply_text(
         "Con che intervallo dovrei riproporre l'evento?",
-        reply_markup=PERIOD,
+        reply_markup=PERIOD_KEY,
     )
     return PERIOD
 
 
 async def get_period(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    period_str = update.message.text.strip().lower()
+    assert update.effective_chat and update.message and update.effective_user
+    period_str = _text(update).strip().lower()
     valid = set(PERIOD_MAP.keys()) | {"custom"}
 
     if period_str not in valid:
         await update.message.reply_text(
-            "Scegli una delle opzioni disponibili.", reply_markup=PERIOD
+            "Scegli una delle opzioni disponibili.", reply_markup=PERIOD_KEY
         )
         return PERIOD
 
     if period_str == "custom":
         await update.message.reply_text(
             "Inserisci il periodo personalizzato\n"
-            "(es. 10 giorni  ·  2 settimane  ·  1 mese e 3 giorni  ·  4 ore e 30 minuti):",
+            "(es. 10 giorni, 2 settimane, 1 mese, 4 ore o 30 minuti):",
             reply_markup=ReplyKeyboardRemove(),
         )
         return CUSTOM_PERIOD
 
-    context.user_data["period"] = PERIOD_MAP[period_str]
+    _user_data(context)["period"] = PERIOD_MAP[period_str]
     return await show_recap(update, context)
 
 
 async def get_custom_period(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    delta = _parse_duration(update.message.text.strip())
+    assert update.effective_chat and update.message and update.effective_user
+    delta = _parse_duration(_text(update).strip())
     if delta is None:
         await update.message.reply_text(
             "Non ho capito la durata, riprova.\n"
-            "Inserisci quantità e unità, es: 3 giorni  ·  2 settimane  ·  1 mese e 4 ore"
+            "Inserisci quantità e unità, es: 3 giorni, 2 settimane,  1 mese o 4 ore"
         )
         return CUSTOM_PERIOD
 
-    context.user_data["period"] = delta
+    _user_data(context)["period"] = delta
     return await show_recap(update, context)
 
 
 async def show_recap(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    d = context.user_data
+    assert update.effective_chat and update.message and update.effective_user
+    d = _user_data(context)
     event_type: str = d["event_type"]
     start_str = d["start_date"].strftime("%d/%m/%Y %H:%M")
 
@@ -334,13 +379,14 @@ async def show_recap(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     lines.append("\nConfermi?")
     await update.message.reply_text(
-        "\n".join(lines), parse_mode="Markdown", reply_markup=CONFIRM
+        "\n".join(lines), parse_mode="Markdown", reply_markup=CONFIRM_KEY
     )
     return CONFIRM
 
 
 async def get_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    risposta = update.message.text.strip().lower()
+    assert update.effective_chat and update.message and update.effective_user
+    risposta = _text(update).strip().lower()
 
     if "annulla" in risposta:
         await update.message.reply_text(
@@ -350,11 +396,11 @@ async def get_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
 
     if "conferma" not in risposta:
         await update.message.reply_text(
-            "Scegli Conferma o Annulla.", reply_markup=CONFIRM
+            "Scegli Conferma o Annulla.", reply_markup=CONFIRM_KEY
         )
         return CONFIRM
 
-    d = context.user_data
+    d = _user_data(context)
     event_type: str = d["event_type"]
 
     if event_type == "reminder":
@@ -390,7 +436,8 @@ async def get_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     return ConversationHandler.END
 
 
-async def cancel(update: Update) -> int:
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    assert update.message
     await update.message.reply_text(
         "Operazione annullata.", reply_markup=ReplyKeyboardRemove()
     )

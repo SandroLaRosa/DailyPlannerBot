@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime
-from typing import Callable
+from typing import Callable, Optional
 
 from telegram.ext import Application
 
@@ -86,6 +86,7 @@ class EventManager:
         self.save_ongoing()
 
     def schedule(self, event: Event, app: Application, callback: Callable) -> None:
+        assert app.job_queue is not None
         app.job_queue.run_once(
             callback,
             when=event.start_date,
@@ -94,6 +95,7 @@ class EventManager:
         )
 
     def deschedule(self, event: Event, app: Application) -> None:
+        assert app.job_queue is not None
         for job in app.job_queue.get_jobs_by_name(event.id):
             job.schedule_removal()
 
@@ -103,7 +105,10 @@ class EventManager:
         self.save_ongoing()
 
     def expire_event(
-        self, event_id: str, app: Application = None, callback: Callable = None
+        self,
+        event_id: str,
+        app: Optional[Application] = None,
+        callback: Optional[Callable] = None,
     ) -> None:
         event = self.events.get(event_id)
         if event is None:
@@ -111,7 +116,7 @@ class EventManager:
         if isinstance(event, RecurringEvent):
             event.decrease_occurrences()
             if event.is_active:
-                if app and callback:
+                if app is not None and callback is not None:
                     self.schedule(event, app, callback)
                 self.save_ongoing()
                 return

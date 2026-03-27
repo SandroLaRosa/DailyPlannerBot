@@ -3,14 +3,9 @@ from datetime import datetime
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from src.classes.event import (
-    Event,
-    RecurringEvent,
-    Reminder,
-    event_from_dict,
-    relativedelta_from_dict,
-    relativedelta_to_dict,
-)
+from src.classes.event import (Event, RecurringEvent, Reminder,
+                               event_from_dict, relativedelta_from_dict,
+                               relativedelta_to_dict)
 from src.modules.timezone_logics import TZ
 
 START = datetime(2026, 6, 1, 10, 0, tzinfo=TZ)
@@ -289,7 +284,10 @@ class TestEventFromDict:
         assert isinstance(event_from_dict(base_event.to_dict()), Event) is True
 
     def test_returns_recurring_event_for_recurring(self, recurring_event):
-        assert isinstance(event_from_dict(recurring_event.to_dict()), RecurringEvent) is True
+        assert (
+            isinstance(event_from_dict(recurring_event.to_dict()), RecurringEvent)
+            is True
+        )
 
     def test_returns_reminder_for_reminder(self, reminder):
         assert isinstance(event_from_dict(reminder.to_dict()), Reminder) is True

@@ -1,4 +1,5 @@
 """DailyPlannerBot entry point"""
+
 import logging
 import os
 
@@ -22,9 +23,7 @@ def main() -> None:
     """Launch the Bot and start logging its states"""
     token = os.getenv("TOKEN")
     if not token:
-        logger.critical(
-            "TOKEN not found. Please check your .env file."
-        )
+        logger.critical("TOKEN not found. Please check your .env file.")
         raise ValueError("Missing Telegram bot Token.")
     app = Application.builder().token(token).build()
     app.bot_data["event_manager"] = EventManager()

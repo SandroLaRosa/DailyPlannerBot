@@ -19,8 +19,8 @@ DELTA = relativedelta(weeks=1)
 
 
 # Fixtures
-@pytest.fixture
-def base_event():
+@pytest.fixture(name="base_event")
+def fixture_base_event():
     return Event(
         name="Riunione",
         start_date=START,
@@ -30,8 +30,8 @@ def base_event():
     )
 
 
-@pytest.fixture
-def recurring_event():
+@pytest.fixture(name="recurring_event")
+def fixture_recurring_event():
     return RecurringEvent(
         name="Stand-up",
         start_date=START,
@@ -42,8 +42,8 @@ def recurring_event():
     )
 
 
-@pytest.fixture
-def reminder():
+@pytest.fixture(name="reminder")
+def fixture_reminder():
     return Reminder(
         name="Pillola",
         start_date=START,

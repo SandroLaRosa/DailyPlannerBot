@@ -11,8 +11,8 @@ from telegram.ext import (
     ContextTypes,
     ConversationHandler,
     MessageHandler,
-    filters
-    )
+    filters,
+)
 
 from src.classes.event import Event, RecurringEvent, Reminder
 from src.classes.event_manager import EventManager

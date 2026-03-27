@@ -9,8 +9,8 @@ from src.classes.event import (
     Reminder,
     event_from_dict,
     relativedelta_from_dict,
-    relativedelta_to_dict
-    )
+    relativedelta_to_dict,
+)
 from src.modules.timezone_logics import TZ
 
 START = datetime(2026, 6, 1, 10, 0, tzinfo=TZ)

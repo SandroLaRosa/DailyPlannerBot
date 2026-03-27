@@ -2,12 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, qd-test]
     paths-ignore:
       - "README.md"
       - "docs/**"
   pull_request:
-    branches: [main]
+    branches: [main, qd-test]
     paths-ignore:
       - "README.md"
       - "docs/**"

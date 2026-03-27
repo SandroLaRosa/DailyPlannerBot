@@ -2,8 +2,9 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from classes.event_manager import EventManager
-from modules.notify import notify_event
 from modules.lang_logics import MSG
+from modules.notify import notify_event
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.bot_data["chat_id"] = update.effective_chat.id
@@ -28,10 +29,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     else:
         await update.message.reply_text(MSG["start"]["no_missed"])
 
-async def help(update: Update, context: ContextTypes.DEFAULT_TYPE)->None:
+
+async def help(update: Update) -> None:
     await update.message.reply_text(
         MSG["help"]["command_list"].format(name=update.effective_user.first_name)
     )
+
 
 if __name__ == "__main__":
     pass

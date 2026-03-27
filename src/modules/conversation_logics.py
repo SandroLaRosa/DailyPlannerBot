@@ -1,50 +1,71 @@
 from __future__ import annotations
 
-from datetime import datetime
-
 import re
+from datetime import datetime
 
 from dateutil import parser as dtparser
 from dateutil.relativedelta import relativedelta
-
-from modules.timezone_logics import TZ
-from modules.lang_logics import MSG
-
-
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
+from telegram.ext import (
+    CommandHandler,
+    ContextTypes,
+    ConversationHandler,
+    MessageHandler,
+    filters,
+)
 
 from classes.event import Event, RecurringEvent, Reminder
 from classes.event_manager import EventManager
 from modules.notify import notify_event
+from modules.timezone_logics import TZ
 
 # States
-(NAME, EVENT_TYPE, START_DATE, END_DATE, HAS_DESCRIPTION, DESCRIPTION, FREQ, PERIOD, CUSTOM_PERIOD, CONFIRM,) = range(10)
+(
+    NAME,
+    EVENT_TYPE,
+    START_DATE,
+    END_DATE,
+    HAS_DESCRIPTION,
+    DESCRIPTION,
+    FREQ,
+    PERIOD,
+    CUSTOM_PERIOD,
+    CONFIRM,
+) = range(10)
 
 # Custom Keyboards
 YES_NO = ReplyKeyboardMarkup(
-    [["Sì", "No"]], one_time_keyboard=True, resize_keyboard=True,
+    [["Sì", "No"]],
+    one_time_keyboard=True,
+    resize_keyboard=True,
 )
 
 EVENT_TYPE = ReplyKeyboardMarkup(
-    [["Evento", "Evento ricorrente", "Promemoria"]], one_time_keyboard=True, resize_keyboard=True,
+    [["Evento", "Evento ricorrente", "Promemoria"]],
+    one_time_keyboard=True,
+    resize_keyboard=True,
 )
 
 PERIOD = ReplyKeyboardMarkup(
-    [["giornaliero", "settimanale"], ["mensile", "annuale"], ["custom"]], one_time_keyboard=True, resize_keyboard=True,
+    [["giornaliero", "settimanale"], ["mensile", "annuale"], ["custom"]],
+    one_time_keyboard=True,
+    resize_keyboard=True,
 )
 
 CONFIRM = ReplyKeyboardMarkup(
-    [["Conferma", "Annulla"]], one_time_keyboard=True, resize_keyboard=True,
+    [["Conferma", "Annulla"]],
+    one_time_keyboard=True,
+    resize_keyboard=True,
 )
 
 # Time Mapper
 PERIOD_MAP: dict[str, relativedelta] = {
     "giornaliero": relativedelta(days=1),
     "settimanale": relativedelta(weeks=1),
-    "mensile":     relativedelta(months=1),
-    "annuale":     relativedelta(years=1),
+    "mensile": relativedelta(months=1),
+    "annuale": relativedelta(years=1),
 }
+
 
 # Helpers
 def _parse_future_dt(text: str) -> datetime | None:
@@ -55,14 +76,22 @@ def _parse_future_dt(text: str) -> datetime | None:
     dt = dt.replace(tzinfo=TZ)
     return dt if dt > datetime.now(TZ) else None
 
+
 UNIT_MAP: dict[str, str] = {
-    "anno": "years",   "anni": "years",
-    "mese": "months",  "mesi": "months",
-    "settimana": "weeks", "settimane": "weeks",
-    "giorno": "days",  "giorni": "days",
-    "ora": "hours",    "ore": "hours",
-    "minuto": "minutes", "minuti": "minutes",
-    "secondo": "seconds", "secondi": "seconds",
+    "anno": "years",
+    "anni": "years",
+    "mese": "months",
+    "mesi": "months",
+    "settimana": "weeks",
+    "settimane": "weeks",
+    "giorno": "days",
+    "giorni": "days",
+    "ora": "hours",
+    "ore": "hours",
+    "minuto": "minutes",
+    "minuti": "minutes",
+    "secondo": "seconds",
+    "secondi": "seconds",
 }
 
 DURATION_RE = re.compile(
@@ -70,11 +99,12 @@ DURATION_RE = re.compile(
     re.IGNORECASE,
 )
 
+
 def _parse_duration(text: str) -> relativedelta | None:
     kwargs: dict[str, int] = {}
     for match in DURATION_RE.finditer(text):
         amount = int(match.group(1))
-        unit   = UNIT_MAP[match.group(2).lower()]
+        unit = UNIT_MAP[match.group(2).lower()]
         kwargs[unit] = kwargs.get(unit, 0) + amount
     return relativedelta(**kwargs) if kwargs else None
 
@@ -89,16 +119,23 @@ def _is_no(text: str) -> bool:
 
 def _format_period(rd: relativedelta) -> str:
     parts: list[str] = []
-    if rd.years:   parts.append(f"{rd.years} ann{'o' if rd.years == 1 else 'i'}")
-    if rd.months:  parts.append(f"{rd.months} mes{'e' if rd.months == 1 else 'i'}")
-    if rd.days:    parts.append(f"{rd.days} giorn{'o' if rd.days == 1 else 'i'}")
-    if rd.hours:   parts.append(f"{rd.hours} or{'a' if rd.hours == 1 else 'e'}")
-    if rd.minutes: parts.append(f"{rd.minutes} minut{'o' if rd.minutes == 1 else 'i'}")
+    if rd.years:
+        parts.append(f"{rd.years} ann{'o' if rd.years == 1 else 'i'}")
+    if rd.months:
+        parts.append(f"{rd.months} mes{'e' if rd.months == 1 else 'i'}")
+    if rd.days:
+        parts.append(f"{rd.days} giorn{'o' if rd.days == 1 else 'i'}")
+    if rd.hours:
+        parts.append(f"{rd.hours} or{'a' if rd.hours == 1 else 'e'}")
+    if rd.minutes:
+        parts.append(f"{rd.minutes} minut{'o' if rd.minutes == 1 else 'i'}")
     return ", ".join(parts) if parts else "—"
 
 
 # Start
-async def start_event_creation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def start_event_creation(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
     context.user_data.clear()
     await update.message.reply_text(
         f"Ok {update.effective_user.first_name}, creiamo un nuovo evento.\n"
@@ -107,6 +144,7 @@ async def start_event_creation(update: Update, context: ContextTypes.DEFAULT_TYP
     )
     return NAME
 
+
 async def get_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data["name"] = update.message.text.strip()
     await update.message.reply_text(
@@ -114,6 +152,7 @@ async def get_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         reply_markup=EVENT_TYPE,
     )
     return EVENT_TYPE
+
 
 async def get_event_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     choice = update.message.text.strip().lower()
@@ -136,6 +175,7 @@ async def get_event_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         reply_markup=ReplyKeyboardRemove(),
     )
     return START_DATE
+
 
 async def get_start_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     dt = _parse_future_dt(update.message.text)
@@ -160,6 +200,7 @@ async def get_start_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await update.message.reply_text("Ok, e quando finisce?")
     return END_DATE
 
+
 async def get_end_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     start: datetime = context.user_data["start_date"]
     dt = _parse_future_dt(update.message.text)
@@ -168,7 +209,7 @@ async def get_end_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         await update.message.reply_text(
             "Non ho capito la data, riprova.\n"
             "Usa il formato: 25/06/2025 18:00  oppure  25 giugno 2025 18:00"
-        )        
+        )
         return END_DATE
 
     if dt <= start:
@@ -184,7 +225,10 @@ async def get_end_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     )
     return HAS_DESCRIPTION
 
-async def get_has_description(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+
+async def get_has_description(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
     answer = update.message.text.strip().lower()
 
     if _is_no(answer):
@@ -201,13 +245,13 @@ async def get_has_description(update: Update, context: ContextTypes.DEFAULT_TYPE
     await update.message.reply_text("Rispondi con 'Sì' o 'No'.", reply_markup=YES_NO)
     return HAS_DESCRIPTION
 
+
 async def get_description(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data["description"] = update.message.text.strip()
     return await _after_description(update, context)
 
-async def _after_description(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> int:
+
+async def _after_description(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if context.user_data["event_type"] == "recurring":
         await update.message.reply_text(
             "Quante volte si ripete l'evento? (inserisci un numero in cifre)",
@@ -215,6 +259,7 @@ async def _after_description(
         )
         return FREQ
     return await show_recap(update, context)
+
 
 async def get_frequency(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
@@ -231,6 +276,7 @@ async def get_frequency(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         reply_markup=PERIOD,
     )
     return PERIOD
+
 
 async def get_period(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     period_str = update.message.text.strip().lower()
@@ -253,6 +299,7 @@ async def get_period(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data["period"] = PERIOD_MAP[period_str]
     return await show_recap(update, context)
 
+
 async def get_custom_period(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     delta = _parse_duration(update.message.text.strip())
     if delta is None:
@@ -264,6 +311,7 @@ async def get_custom_period(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     context.user_data["period"] = delta
     return await show_recap(update, context)
+
 
 async def show_recap(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     d = context.user_data
@@ -341,26 +389,38 @@ async def get_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     )
     return ConversationHandler.END
 
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+
+async def cancel(update: Update) -> int:
     await update.message.reply_text(
         "Operazione annullata.", reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
 
+
 def add_event_handler() -> ConversationHandler:
     return ConversationHandler(
         entry_points=[CommandHandler("crea_evento", start_event_creation)],
         states={
-            NAME:            [MessageHandler(filters.TEXT & ~filters.COMMAND, get_name)],
-            EVENT_TYPE:      [MessageHandler(filters.TEXT & ~filters.COMMAND, get_event_type)],
-            START_DATE:      [MessageHandler(filters.TEXT & ~filters.COMMAND, get_start_date)],
-            END_DATE:        [MessageHandler(filters.TEXT & ~filters.COMMAND, get_end_date)],
-            HAS_DESCRIPTION: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_has_description)],
-            DESCRIPTION:     [MessageHandler(filters.TEXT & ~filters.COMMAND, get_description)],
-            FREQ:            [MessageHandler(filters.TEXT & ~filters.COMMAND, get_frequency)],
-            PERIOD:          [MessageHandler(filters.TEXT & ~filters.COMMAND, get_period)],
-            CUSTOM_PERIOD:   [MessageHandler(filters.TEXT & ~filters.COMMAND, get_custom_period)],
-            CONFIRM:         [MessageHandler(filters.TEXT & ~filters.COMMAND, get_confirm)],
+            NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_name)],
+            EVENT_TYPE: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, get_event_type)
+            ],
+            START_DATE: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, get_start_date)
+            ],
+            END_DATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_end_date)],
+            HAS_DESCRIPTION: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, get_has_description)
+            ],
+            DESCRIPTION: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, get_description)
+            ],
+            FREQ: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_frequency)],
+            PERIOD: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_period)],
+            CUSTOM_PERIOD: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, get_custom_period)
+            ],
+            CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_confirm)],
         },
         fallbacks=[CommandHandler("annulla", cancel)],
     )

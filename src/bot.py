@@ -1,11 +1,14 @@
 """DailyPlannerBot entry point"""
-import os
+
 import logging
+import os
+
+from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application
-from dotenv import load_dotenv
-from classes.event_manager import EventManager
-from modules.handler_manager import load
+
+from src.classes.event_manager import EventManager
+from src.modules.handler_manager import load
 
 load_dotenv()
 
@@ -20,9 +23,7 @@ def main() -> None:
     """Launch the Bot and start logging its states"""
     token = os.getenv("TOKEN")
     if not token:
-        logger.critical(
-            "TOKEN not found. Please check your .env file."
-        )
+        logger.critical("TOKEN not found. Please check your .env file.")
         raise ValueError("Missing Telegram bot Token.")
     app = Application.builder().token(token).build()
     app.bot_data["event_manager"] = EventManager()

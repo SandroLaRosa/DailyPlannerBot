@@ -6,3 +6,4 @@ mypy
 flake8
 black
 isort
+types-python-dateutil

@@ -2,8 +2,8 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from classes.event_manager import EventManager
-from modules.lang_logics import MSG
-from modules.notify import notify_event
+from src.modules.lang_logics import MSG
+from src.modules.notify import notify_event
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

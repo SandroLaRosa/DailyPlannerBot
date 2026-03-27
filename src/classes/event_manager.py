@@ -7,8 +7,8 @@ from typing import Callable, Optional
 
 from telegram.ext import Application
 
-from classes.event import Event, RecurringEvent, event_from_dict
-from modules.timezone_logics import TZ
+from src.classes.event import Event, RecurringEvent, event_from_dict
+from src.modules.timezone_logics import TZ
 
 # File Management
 

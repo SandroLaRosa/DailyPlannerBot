@@ -1,6 +1,6 @@
 from telegram.ext import ContextTypes
 
-from classes.event_manager import EventManager
+from src.classes.event_manager import EventManager
 
 
 async def notify_event(context: ContextTypes.DEFAULT_TYPE) -> None:

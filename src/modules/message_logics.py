@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from modules.lang_logics import MSG
+from src.modules.lang_logics import MSG
 
 DIC = MSG["unsupported"]
 

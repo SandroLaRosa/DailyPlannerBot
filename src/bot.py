@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application
 
-from classes.event_manager import EventManager
-from modules.handler_manager import load
+from src.classes.event_manager import EventManager
+from src.modules.handler_manager import load
 
 load_dotenv()
 

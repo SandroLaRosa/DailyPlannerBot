@@ -9,10 +9,10 @@ from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (CommandHandler, ContextTypes, ConversationHandler,
                           MessageHandler, filters)
 
-from classes.event import Event, RecurringEvent, Reminder
-from classes.event_manager import EventManager
-from modules.notify import notify_event
-from modules.timezone_logics import TZ
+from src.classes.event import Event, RecurringEvent, Reminder
+from src.classes.event_manager import EventManager
+from src.modules.notify import notify_event
+from src.modules.timezone_logics import TZ
 
 # States
 (

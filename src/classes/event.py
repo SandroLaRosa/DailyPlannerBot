@@ -6,7 +6,7 @@ from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 
-from modules.timezone_logics import TZ
+from src.modules.timezone_logics import TZ
 
 
 class Event:

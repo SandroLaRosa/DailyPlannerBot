@@ -6,8 +6,13 @@ from datetime import datetime
 from dateutil import parser as dtparser
 from dateutil.relativedelta import relativedelta
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
-from telegram.ext import (CommandHandler, ContextTypes, ConversationHandler,
-                          MessageHandler, filters)
+from telegram.ext import (
+    CommandHandler,
+    ContextTypes,
+    ConversationHandler,
+    MessageHandler,
+    filters,
+)
 
 from src.classes.event import Event, RecurringEvent, Reminder
 from src.classes.event_manager import EventManager

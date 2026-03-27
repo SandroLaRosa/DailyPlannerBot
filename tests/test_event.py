@@ -1,16 +1,17 @@
-import pytest
 from datetime import datetime
+
+import pytest
 from dateutil.relativedelta import relativedelta
 
-from modules.timezone_logics import TZ
-from classes.event import (
+from src.classes.event import (
     Event,
     RecurringEvent,
     Reminder,
-    relativedelta_to_dict,
-    relativedelta_from_dict,
     event_from_dict,
+    relativedelta_from_dict,
+    relativedelta_to_dict,
 )
+from src.modules.timezone_logics import TZ
 
 START = datetime(2026, 6, 1, 10, 0, tzinfo=TZ)
 END = datetime(2026, 6, 1, 12, 0, tzinfo=TZ)
@@ -285,13 +286,13 @@ class TestReminderSerialization:
 # Generic: Type Assertion (EventFromDict)
 class TestEventFromDict:
     def test_returns_event_for_single_time(self, base_event):
-        assert type(event_from_dict(base_event.to_dict())) is Event
+        assert isinstance(event_from_dict(base_event.to_dict()), Event) is True
 
     def test_returns_recurring_event_for_recurring(self, recurring_event):
-        assert type(event_from_dict(recurring_event.to_dict())) is RecurringEvent
+        assert isinstance(event_from_dict(recurring_event.to_dict()), RecurringEvent) is True
 
     def test_returns_reminder_for_reminder(self, reminder):
-        assert type(event_from_dict(reminder.to_dict())) is Reminder
+        assert isinstance(event_from_dict(reminder.to_dict()), Reminder) is True
 
     def test_raises_for_unknown_type(self):
         with pytest.raises(ValueError):

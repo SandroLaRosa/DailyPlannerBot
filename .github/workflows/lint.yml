@@ -42,7 +42,7 @@ jobs:
         run: mypy src/
 
       - name: Lint with mypy (test)
-        run: mypy tests/
+        run: MYPYPATH=src mypy tests/
 
       - name: Check code formatting with black
         run: black --check --diff $(git ls-files '*.py')

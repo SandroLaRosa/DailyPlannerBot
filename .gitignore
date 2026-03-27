@@ -1,7 +1,8 @@
+**/__pycache__
+**/*.pyc
+**/.DS_Store
+.coverage
 venv/
-__pycache__/
-*.pyc
 .env
 .dev
-test/
-src/data/
+**/*.json

@@ -244,7 +244,7 @@ async def get_end_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     if dt is None:
         await update.message.reply_text(
-            "Non ho capito la data, riprova.\n" "Usa il formato: 25/06/2025 18:00"
+            "Non ho capito la data, riprova.\nUsa il formato: 25/06/2025 18:00"
         )
         return END_DATE
 
@@ -436,7 +436,7 @@ async def get_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     return ConversationHandler.END
 
 
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def cancel(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> int:
     assert update.message
     await update.message.reply_text(
         "Operazione annullata.", reply_markup=ReplyKeyboardRemove()

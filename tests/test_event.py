@@ -3,9 +3,14 @@ from datetime import datetime
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from src.classes.event import (Event, RecurringEvent, Reminder,
-                               event_from_dict, relativedelta_from_dict,
-                               relativedelta_to_dict)
+from src.classes.event import (
+    Event,
+    RecurringEvent,
+    Reminder,
+    event_from_dict,
+    relativedelta_from_dict,
+    relativedelta_to_dict
+    )
 from src.modules.timezone_logics import TZ
 
 START = datetime(2026, 6, 1, 10, 0, tzinfo=TZ)

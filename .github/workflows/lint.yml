@@ -39,10 +39,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Lint with mypy (src)
-        run: mypy src/
-
-      - name: Lint with mypy (test)
-        run: MYPYPATH=src mypy --explicit-package-bases tests/
+        run: mypy --explicit-package-bases src/ tests/
 
       - name: Check code formatting with black
         run: black --check --diff $(git ls-files '*.py')

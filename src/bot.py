@@ -1,9 +1,11 @@
 """DailyPlannerBot entry point"""
-import os
 import logging
+import os
+
+from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application
-from dotenv import load_dotenv
+
 from classes.event_manager import EventManager
 from modules.handler_manager import load
 

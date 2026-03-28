@@ -8,6 +8,10 @@
     "help":{
         "command_list": "Certo, ecco una lista dei comandi disponibili:\n"
     },
+    "restart":{
+        "begin":"━━━━━ 🔄 RIAVVIO ━━━━━",
+        "end":"✅ Riavvio completato con successo."
+    },
     "unsupported": {
         "unknown_command": "Hai scritto: {command}.\nNon conosco comandi corrispondenti.\nPer una lista dei comandi disponibili consulta /help.",
         "plain_text": "Non sono ancora in grado di elaborare messaggi.\nUsa uno dei comandi disponibili. Per la lista consulta /help.",

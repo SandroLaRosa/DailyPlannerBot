@@ -2,7 +2,11 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 from src.modules import command_logics, conversation_logics, message_logics
 
-COMMAND_HANDLERS = [("start", command_logics.start), ("help", command_logics.help)]
+COMMAND_HANDLERS = [
+    ("start", command_logics.start),
+    ("help", command_logics.help),
+    ("restart", command_logics.restart),
+]
 
 MESSAGE_HANDLERS = [
     (filters.PHOTO, message_logics.photo_handler),

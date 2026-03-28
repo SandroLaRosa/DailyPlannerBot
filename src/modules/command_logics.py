@@ -38,5 +38,12 @@ async def help(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
+async def restart(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    assert update.effective_chat and update.message and update.effective_user
+    await update.message.reply_text(MSG["restart"]["begin"])
+    await start(update, context)
+    await update.message.reply_text(MSG["restart"]["end"])
+
+
 if __name__ == "__main__":
     pass

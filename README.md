@@ -1,31 +1,74 @@
-# Daily Planner Bot
+## Daily Planner bot
 
-## Descrizione:
 Un bot di telegram dedicato alla gestione di eventi e promemoria.
 Il bot include diverse funzionalità, tra cui:
-- Gestione di diverse tipologie di eventi (semplici eventi, eventi ricorrenti o promemoria)
+- Gestione di diverse tipologie di eventi (eventi semplici, eventi ricorrenti o promemoria)
 - Scheduling di Eventi
-- Persistenza degli eventi tramite I/O su file
-- Recap Impegni Giornalieri
+- Persistenza di eventi tramite I/O su file
+- Recap impegni Giornalieri
 
-### Guida all'installazione:
-Per il corretto funzionamento del bot occorre creare un file .env all'interno del folder.
-Esiste a tal proposito un file .env* che è un file contenente tutti i campi richiesti dal bot
-per funzionare, in particolare, occorre inserire il proprio token di telegram prodotto da
-@BotFather nel campo Token.
-È inoltre consigliato l'utilizzo degli altri due campi di .env (anche se il bot prevede meccanismi
-di fallback a settaggi standard) è comodo poter variare la propria timezone e la lingua dal file di
-configurazione.
+### 1️⃣ How to start (one-time step)
 
-Si suggerisce l'utilizzo di un virtual environment, all'interno del quale è necessario installare le
-dipendenze incluse nel file requirements.txt
+Clona il contenuto di questa repo eseguendo:
 
-### Guida all'utilizzo
-Per attivare il bot, basta semplicemente eseguire lo script bot.py sul proprio device.
-Finché lo script rimarrà in esecuzione il bot funzionerà correttamente.
-In caso il processo del bot venga arrestato, basta farlo ripartire e in chat eseguire il comando /start.
+```bash
+git clone git@github.com:SandroLaRosa/DailyPlannerBot.git
+```
 
-#### Credits:
+Entra nella nuova directory che è apparsa eseguendo:
+
+```bash
+cd DailyPlannerBot
+```
+
+Crea un virtualenv:
+
+```bash
+python3 -m pip install venv
+python3 -m venv venv
+source ./venv/bin/activate
+```
+
+Una volta eseguiti i comandi precedenti vedrai `(venv)` nel tuo terminale, se ciò accade perfetto adesso stai usando la versione di python e i pacchetti presenti in esso.
+
+Adesso possiamo procedere con l'installazione delle dipendenze:
+
+```bash
+pip install -r requirements.txt
+```
+
+⚠️ Note: Dovrai sempre eseguire `source ./venv/bin/activate` ogni volta che aprirai un nuovo terminale per eseguire codice dal virtualenv.
+
+Prima di continuare:
+```bash
+cd src
+echo TOKEN= > .env && echo BOT_LANG=it >> .env && echo BOT_TZ=Europe/Rome >> .env
+cd ..
+```
+Noterai che all'interno di src è adesso apparso un file ".env", all'interno di questo file dovrai incollare il tuo token generato da BotFather su telegram appena dopo "TOKEN="
+
+Perfetto adesso sei pronto per poter utilizzare il bot, basta eseguire:
+
+```bash
+python3 -m src.bot
+```
+
+Finchè il processo del bot sarà attivo, potrai usare DailyPlannerBot.
+Qualora il processo venisse arrestato, si suggerisce di usare il comando /restart.
+---
+
+
+### Alcuni comandi disponibili in chat:
+
+/start          :   Comando che avvia il bot
+/help           :   Comando che stampa un elenco dei comandi disponibili
+/crea_evento    :   Avvio di una conversazione alla fine della quale viene creato un evento di un dato tipo
+/recap          :   Avvio di una conversazione alla fine della quale viene stampata una lista degli eventi di un dato giorno
+/restart        :   Reset di una conversazione dopo che il bot è crashato
+
+
+### Contributing
+
 Sviluppato e mantenuto da:
 Alessandro La Rosa
 Flavio Miccichè

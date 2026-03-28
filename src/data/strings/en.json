@@ -8,6 +8,10 @@
     "help":{
         "command_list": "Those are the command i support:\n"
     },
+    "restart":{
+        "begin":"━━━━━ 🔄 RESTART ━━━━━",
+        "end":"✅ Restarted Successfully."
+    },
     "unsupported": {
         "unknown_command": "You wrote: {command}.\nI don't know any command with that name.\nPlease consult /help for a list with all supported commands.",
         "plain_text": "I am a simple bot, i can't yet understand natural language.\nPlease use a pre-defined command to interact with me. For a complete list use /help.",

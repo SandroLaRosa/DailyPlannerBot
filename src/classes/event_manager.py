@@ -125,7 +125,7 @@ class EventManager:
                 job_kwargs=job_kwargs,
             )
             logger.info("Event scheduled %s for %s", event.name, when.isoformat())
-        except Exception as error:
+        except Exception as error:  # pylint: disable=broad-exception-caught
             logger.exception("Error scheduling event '%s': %s", event.name, error)
 
     def deschedule(self, event: Event, app: Application) -> None:

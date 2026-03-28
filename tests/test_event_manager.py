@@ -14,8 +14,8 @@ from src.classes.event_manager import EventManager
 from src.modules.timezone_logics import TZ
 
 
-@pytest.fixture
-def manager(tmp_path, monkeypatch):
+@pytest.fixture(name="manager")
+def fixture_manager(tmp_path, monkeypatch):
     base = tmp_path / "data"
     base.mkdir()
 
@@ -36,20 +36,12 @@ def manager(tmp_path, monkeypatch):
 # Fixtures
 
 
-class MockJobQueue:
+class MockApp:
     def __init__(self):
-        self.calls = []
+        self.job_calls = []
 
-    def run_once(
-        self,
-        callback,
-        when,
-        name,
-        data,
-        chat_id,
-        job_kwargs,
-    ):
-        self.calls.append(
+    def run_once(self, callback, when, name, data, chat_id, job_kwargs):
+        self.job_calls.append(
             {
                 "callback": callback,
                 "when": when,
@@ -61,21 +53,23 @@ class MockJobQueue:
         )
         return "job"
 
+    def get_jobs_by_name(self, _name):
+        return []
 
-class MockApp:
-    def __init__(self):
-        self.job_queue = MockJobQueue()
+    @property
+    def job_queue(self):
+        return self
 
 
-@pytest.fixture
-def app():
+@pytest.fixture(name="app")
+def fixture_app():
     return MockApp()
 
 
 # Test1 : load_ongoing
 
 
-def test_load_ongoing_persists_missed(manager, tmp_path):
+def test_load_ongoing_persists_missed(manager, _tmp_path):
     now = datetime.now(TZ)
 
     past = Event("past", now - timedelta(minutes=10), now - timedelta(minutes=5))
@@ -91,11 +85,10 @@ def test_load_ongoing_persists_missed(manager, tmp_path):
     assert ongoing[0].id == future.id
     assert missed[0].id == past.id
 
-    # Verifica persistenza
-    with open(em.MISSED_FILE) as f:
+    with open(em.MISSED_FILE, encoding="utf-8") as f:
         assert len(json.load(f)) == 1
 
-    with open(em.ONGOING_FILE) as f:
+    with open(em.ONGOING_FILE, encoding="utf-8") as f:
         assert len(json.load(f)) == 1
 
 
@@ -108,13 +101,13 @@ def test_schedule_past_event_delayed(manager, app):
 
     manager.schedule(event, app, callback=lambda *_: None, chat_id=123)
 
-    assert len(app.job_queue.calls) == 1
-    call = app.job_queue.calls[0]
+    assert len(app.job_calls) == 1
+    call = app.job_calls[0]
 
     assert call["name"] == event.id
     assert call["job_kwargs"]["misfire_grace_time"] == 60
     assert call["job_kwargs"]["coalesce"] is True
-    assert call["when"] > now  # delay applicato
+    assert call["when"] > now
 
 
 # Test 3: recurring event

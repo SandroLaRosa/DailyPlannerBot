@@ -1,4 +1,4 @@
 import os
 from zoneinfo import ZoneInfo
 
-TZ = ZoneInfo(os.getenv("BOT_TZ", "Europe/Rome"))
+TZ: ZoneInfo = ZoneInfo(os.getenv("BOT_TZ", "Europe/Rome"))

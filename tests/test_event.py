@@ -24,7 +24,7 @@ from src.classes.event import (
 
 _TZ = ZoneInfo("Europe/Rome")
 _tz_stub = type(sys)("src.modules.timezone_logics")
-_tz_stub.TZ = _TZ
+_tz_stub.TZ = _TZ   # type: ignore
 sys.modules["src.modules.timezone_logics"] = _tz_stub
 
 

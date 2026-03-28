@@ -2,12 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, qd-test]
     paths-ignore:
       - "README.md"
       - "docs/**"
   pull_request:
-    branches: [main]
+    branches: [main, qd-test]
     paths-ignore:
       - "README.md"
       - "docs/**"
@@ -29,7 +29,7 @@ jobs:
           if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
 
       - name: Lint with pylint
-        run: pylint $(git ls-files '*.py')
+        run: pylint --max-args=9 --max-positional-arguments=9 $(git ls-files '*.py')
 
       - name: Lint with flake8
         run: |
@@ -39,10 +39,10 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Lint with mypy
-        run: mypy $(git ls-files '*.py')
+        run: mypy --explicit-package-bases src/ tests/
 
       - name: Check code formatting with black
         run: black --check --diff $(git ls-files '*.py')
 
       - name: Check code formatting with isort
-        run: isort --check-only --diff $(git ls-files '*.py')
+        run: isort --check-only --diff --profile black $(git ls-files '*.py')

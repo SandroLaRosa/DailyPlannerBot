@@ -1,0 +1,20 @@
+[
+  {
+    "type": "recurring",
+    "id": "fd8b529a-8f7c-42a2-8193-4caae972fe6d",
+    "name": "T",
+    "start_date": "2026-03-27T18:54:30+01:00",
+    "end_date": "2026-03-27T18:55:30+01:00",
+    "description": null,
+    "is_active": false,
+    "period": {
+      "years": 0,
+      "months": 0,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 10
+    },
+    "remaining_occurrences": 1
+  }
+]

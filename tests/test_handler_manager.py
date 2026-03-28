@@ -58,6 +58,10 @@ class TestHandlerLists:
         commands = [cmd for cmd, _ in _hm_module.COMMAND_HANDLERS]
         assert "help" in commands
 
+    def test_command_handlers_contains_restart(self):
+        commands = [cmd for cmd, _ in _hm_module.COMMAND_HANDLERS]
+        assert "restart" in commands
+
     def test_message_handlers_list_is_non_empty(self):
         assert len(_hm_module.MESSAGE_HANDLERS) >= 1
 

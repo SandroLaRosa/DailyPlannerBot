@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable, Optional
 
 from telegram.ext import Application
 
 from src.classes.event import Event, RecurringEvent, event_from_dict
 from src.modules.timezone_logics import TZ
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # File Management
 
@@ -85,23 +89,59 @@ class EventManager:
         append_json(event, EXPIRED_FILE)
         self.save_ongoing()
 
-    def schedule(self, event: Event, app: Application, callback: Callable) -> None:
-        assert app.job_queue is not None
-        app.job_queue.run_once(
-            callback,
-            when=event.start_date,
-            name=event.id,
-            data=event.id,
-        )
+    def schedule(
+        self,
+        event: Event,
+        app: Application,
+        callback: Callable,
+        chat_id: int | None = None,
+    ) -> None:
+        if app is None or not hasattr(app, "job_queue") or app.job_queue is None:
+            logger.warning(
+                "JobQueue not available. Event '%s' saved but not scheduled.",
+                event.name,
+            )
+            return
+
+        when = event.start_date
+        now = datetime.now(TZ)
+
+        # Se l'evento è già passato o è imminente, posticipa di 1s per ridurre misfire.
+        if when <= now:
+            when = now + timedelta(seconds=1)
+
+        job_kwargs = {
+            "misfire_grace_time": 60,
+            "coalesce": True,
+        }
+
+        try:
+            app.job_queue.run_once(
+                callback,
+                when=when,
+                name=event.id,
+                data=event.id,
+                chat_id=chat_id,
+                job_kwargs=job_kwargs,
+            )
+            logger.info("Event scheduled %s for %s", event.name, when.isoformat())
+        except Exception as error:
+            logger.exception("Error scheduling event '%s': %s", event.name, error)
 
     def deschedule(self, event: Event, app: Application) -> None:
         assert app.job_queue is not None
         for job in app.job_queue.get_jobs_by_name(event.id):
             job.schedule_removal()
 
-    def add_event(self, event: Event, app: Application, callback: Callable) -> None:
+    def add_event(
+        self,
+        event: Event,
+        app: Application,
+        callback: Callable,
+        chat_id: int | None = None,
+    ) -> None:
         self.events[event.id] = event
-        self.schedule(event, app, callback)
+        self.schedule(event, app, callback, chat_id=chat_id)
         self.save_ongoing()
 
     def expire_event(

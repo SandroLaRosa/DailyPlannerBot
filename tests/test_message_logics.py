@@ -11,8 +11,7 @@ import sys
 import pytest
 
 import src.modules.command_logics as _cl_module  # noqa: E402
-
-# MSG
+from tests.stub_helpers import base_stubs
 
 _MSG = {
     "start": {
@@ -33,15 +32,9 @@ _MSG = {
 
 @pytest.fixture(autouse=True)
 def _stub_modules(mocker):
-    stubs = {
-        "telegram": mocker.MagicMock(),
-        "telegram.ext": mocker.MagicMock(),
-        "src.classes.event_manager": mocker.MagicMock(),
-        "src.classes.event": mocker.MagicMock(),
-        "src.modules.notify": mocker.MagicMock(notify_event=mocker.AsyncMock()),
-        "src.modules.timezone_logics": mocker.MagicMock(),
-        "src.modules.lang_logics": mocker.MagicMock(MSG=_MSG),
-    }
+    stubs = base_stubs(mocker)
+    stubs["src.modules.timezone_logics"] = mocker.MagicMock()
+    stubs["src.modules.lang_logics"] = mocker.MagicMock(MSG=_MSG)
     mocker.patch.dict(sys.modules, stubs)
     importlib.reload(_cl_module)
     yield

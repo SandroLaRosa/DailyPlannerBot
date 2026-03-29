@@ -7,7 +7,7 @@ Il bot include diverse funzionalità, tra cui:
 - Persistenza di eventi tramite I/O su file
 - Recap impegni Giornalieri
 
-### 1️⃣ How to start (one-time step)
+### How to start (one-time step)
 
 Clona il contenuto di questa repo eseguendo:
 
@@ -55,18 +55,17 @@ python3 -m src.bot
 
 Finchè il processo del bot sarà attivo, potrai usare DailyPlannerBot.
 Qualora il processo venisse arrestato, si suggerisce di usare il comando /restart.
----
 
 
 ### Alcuni comandi disponibili in chat:
 
-/start          :   Comando che avvia il bot
-/help           :   Comando che stampa un elenco dei comandi disponibili
-/crea_evento    :   Avvio di una conversazione alla fine della quale viene creato un evento di un dato tipo
-/recap          :   Avvio di una conversazione alla fine della quale viene stampata una lista degli eventi di un dato giorno
-/restart        :   Reset di una conversazione dopo che il bot è crashato
+- /start          :   Comando che avvia il bot
+- /help           :   Comando che stampa un elenco dei comandi disponibili
+- /crea_evento    :   Avvio di una conversazione alla fine della quale viene creato un evento di un dato tipo
+- /recap          :   Avvio di una conversazione alla fine della quale viene stampata una lista degli eventi di un dato giorno
+- /restart        :   Reset di una conversazione dopo che il bot è crashato
 
-
+---
 ### Contributing
 
 Sviluppato e mantenuto da:

@@ -69,7 +69,7 @@ def fixture_app():
 # Test1 : load_ongoing
 
 
-def test_load_ongoing_persists_missed(manager, _tmp_path):
+def test_load_ongoing_persists_missed(manager):
     now = datetime.now(TZ)
 
     past = Event("past", now - timedelta(minutes=10), now - timedelta(minutes=5))

@@ -6,7 +6,11 @@
         "no_missed": "Perfetto, nessun messaggio perso dall'ultima sessione."
     },
     "help":{
-        "command_list": "Certo, ecco una lista dei comandi disponibili:\n"
+        "command_list": "Certo, ecco una lista dei comandi disponibili:\n\\restart,\t per riavviare il bot dopo un problema del server.\n\\crea_evento,\t per creare un evento di un dato tipo.\n\\recap, per ricevere una lista degli eventi previsti per un dato giorno."
+    },
+    "restart":{
+        "begin":"━━━━━ 🔄 RIAVVIO ━━━━━",
+        "end":"✅ Riavvio completato con successo."
     },
     "unsupported": {
         "unknown_command": "Hai scritto: {command}.\nNon conosco comandi corrispondenti.\nPer una lista dei comandi disponibili consulta /help.",

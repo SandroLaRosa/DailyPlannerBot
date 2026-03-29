@@ -39,6 +39,7 @@ from src.modules.conversation_logics import (  # noqa: E402
     show_recap,
     start_event_creation,
 )
+from tests.stub_helpers import make_update as _make_update
 
 
 # Stub
@@ -70,17 +71,6 @@ _TZ = ZoneInfo("Europe/Rome")
 def _run(coro):
     """Run an async coroutine synchronously."""
     return asyncio.run(coro)
-
-
-def _make_update(mocker, text: str = "placeholder"):
-    update = mocker.MagicMock()
-    update.effective_chat = mocker.MagicMock()
-    update.effective_user = mocker.MagicMock()
-    update.effective_user.first_name = "Luca"
-    update.message = mocker.MagicMock()
-    update.message.text = text
-    update.message.reply_text = mocker.AsyncMock()
-    return update
 
 
 def _make_context(mocker, user_data: dict | None = None, bot_data: dict | None = None):

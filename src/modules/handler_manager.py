@@ -1,6 +1,11 @@
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
-from src.modules import command_logics, conversation_logics, message_logics
+from src.modules import (
+    command_logics,
+    conversation_logics,
+    message_logics,
+    recap_logics,
+)
 
 COMMAND_HANDLERS = [
     ("start", command_logics.start),
@@ -21,7 +26,10 @@ MESSAGE_HANDLERS = [
     (filters.COMMAND, message_logics.unknown_command_handler),
 ]
 
-CONVERSATION_HANDLERS = [conversation_logics.add_event_handler]
+CONVERSATION_HANDLERS = [
+    conversation_logics.add_event_handler,
+    recap_logics.recap_handler,
+]
 
 
 def load(app: Application) -> None:

@@ -12,7 +12,7 @@ import pytest
 from telegram.ext import ConversationHandler
 
 import src.modules.recap_logics as _rl_module
-from tests.stub_helpers import base_stubs
+from tests.stub_helpers import base_stubs, make_update
 
 _TZ = ZoneInfo("Europe/Rome")
 
@@ -34,16 +34,6 @@ def _run(coro):
     return asyncio.run(coro)
 
 
-def _make_update(mocker, text: str = "28/04/2099"):
-    update = mocker.MagicMock()
-    update.effective_chat = mocker.MagicMock()
-    update.effective_user = mocker.MagicMock()
-    update.message = mocker.MagicMock()
-    update.message.text = text
-    update.message.reply_text = mocker.AsyncMock()
-    return update
-
-
 def _make_context(mocker, events: dict | None = None):
     ctx = mocker.MagicMock()
     ctx.user_data = {}
@@ -63,14 +53,13 @@ def _make_event(mocker, start: datetime):
 
 
 def _set_parse(stubs, return_value):
-    # pylint: disable=protected-access
-    stubs["src.modules.conversation_logics"]._parse_future_dt.return_value = (
-        return_value
-    )
+    getattr(
+        stubs["src.modules.conversation_logics"], "_parse_future_dt"
+    ).return_value = return_value
 
 
 def test_start_recap_replies_and_returns_RECAP_DATE(mocker, _stub_modules):
-    update = _make_update(mocker)
+    update = make_update(mocker)
     state = _run(_rl_module.start_recap(update, _make_context(mocker)))
     assert state == _rl_module.RECAP_DATE
     update.message.reply_text.assert_awaited_once()
@@ -78,14 +67,14 @@ def test_start_recap_replies_and_returns_RECAP_DATE(mocker, _stub_modules):
 
 def test_get_recap_date_invalid_stays(mocker, _stub_modules):
     _set_parse(_stub_modules, None)
-    update = _make_update(mocker, "non è una data")
+    update = make_update(mocker, "non è una data")
     state = _run(_rl_module.get_recap_date(update, _make_context(mocker)))
     assert state == _rl_module.RECAP_DATE
 
 
 def test_get_recap_date_past_date_rejected(mocker, _stub_modules):
     _set_parse(_stub_modules, None)
-    update = _make_update(mocker, "01/01/2020")
+    update = make_update(mocker, "01/01/2020")
     state = _run(_rl_module.get_recap_date(update, _make_context(mocker)))
     assert state == _rl_module.RECAP_DATE
     replied = update.message.reply_text.call_args[0][0]
@@ -94,7 +83,7 @@ def test_get_recap_date_past_date_rejected(mocker, _stub_modules):
 
 def test_get_recap_date_no_events_replies_none_found(mocker, _stub_modules):
     _set_parse(_stub_modules, datetime(2099, 4, 28, 10, 0, tzinfo=_TZ))
-    update = _make_update(mocker, "28/04/2099")
+    update = make_update(mocker, "28/04/2099")
     state = _run(_rl_module.get_recap_date(update, _make_context(mocker, events={})))
     assert state == ConversationHandler.END
     replied = update.message.reply_text.call_args[0][0]
@@ -106,7 +95,7 @@ def test_get_recap_date_matching_event_appears_in_reply(mocker, _stub_modules):
     _set_parse(_stub_modules, target)
     ev = _make_event(mocker, target)
     ctx = _make_context(mocker, events={"id-1": ev})
-    update = _make_update(mocker, "28/04/2099")
+    update = make_update(mocker, "28/04/2099")
     state = _run(_rl_module.get_recap_date(update, ctx))
     assert state == ConversationHandler.END
     replied = update.message.reply_text.call_args[0][0]
@@ -122,7 +111,7 @@ def test_get_recap_date_filters_out_other_dates(mocker, _stub_modules):
         "b": _make_event(mocker, other_day),
     }
     ctx = _make_context(mocker, events=events)
-    update = _make_update(mocker, "28/04/2099")
+    update = make_update(mocker, "28/04/2099")
     _run(_rl_module.get_recap_date(update, ctx))
     replied = update.message.reply_text.call_args[0][0]
     assert "09:00" in replied
@@ -135,7 +124,7 @@ def test_get_recap_date_multiple_events_all_listed(mocker, _stub_modules):
     ev1 = _make_event(mocker, datetime(2099, 4, 28, 8, 0, tzinfo=_TZ))
     ev2 = _make_event(mocker, datetime(2099, 4, 28, 14, 0, tzinfo=_TZ))
     ctx = _make_context(mocker, events={"a": ev1, "b": ev2})
-    update = _make_update(mocker, "28/04/2099")
+    update = make_update(mocker, "28/04/2099")
     _run(_rl_module.get_recap_date(update, ctx))
     replied = update.message.reply_text.call_args[0][0]
     assert "08:00" in replied
@@ -143,7 +132,7 @@ def test_get_recap_date_multiple_events_all_listed(mocker, _stub_modules):
 
 
 def test_cancel_recap_ends_and_replies(mocker, _stub_modules):
-    update = _make_update(mocker)
+    update = make_update(mocker)
     state = _run(_rl_module.cancel_recap(update, _make_context(mocker)))
     assert state == ConversationHandler.END
     update.message.reply_text.assert_awaited_once()

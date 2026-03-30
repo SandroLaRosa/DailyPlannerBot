@@ -327,9 +327,7 @@ class TestGetDeleteConfirm:
     def test_annulla_ends_without_removing(self, mocker):
         ev = _make_event(mocker, "Riunione", _dt())
         ctx, em = self._ctx_with_event(mocker, ev)
-        state = _run(
-            _dl_module.get_delete_confirm(_make_update(mocker, "Annulla"), ctx)
-        )
+        state = _run(_dl_module.get_delete_confirm(_make_update(mocker, "cancel"), ctx))
         assert state == ConversationHandler.END
         em.remove_event.assert_not_called()
 
@@ -342,20 +340,20 @@ class TestGetDeleteConfirm:
     def test_conferma_calls_remove_event_with_correct_id(self, mocker):
         ev = _make_event(mocker, "Riunione", _dt())
         ctx, em = self._ctx_with_event(mocker, ev)
-        _run(_dl_module.get_delete_confirm(_make_update(mocker, "Conferma"), ctx))
+        _run(_dl_module.get_delete_confirm(_make_update(mocker, "confirm"), ctx))
         em.remove_event.assert_called_once_with(ev.id, ctx.application)
 
     def test_conferma_ends_conversation(self, mocker):
         ev = _make_event(mocker, "Riunione", _dt())
         ctx, _ = self._ctx_with_event(mocker, ev)
         state = _run(
-            _dl_module.get_delete_confirm(_make_update(mocker, "Conferma"), ctx)
+            _dl_module.get_delete_confirm(_make_update(mocker, "confirm"), ctx)
         )
         assert state == ConversationHandler.END
 
     def test_conferma_final_reply_contains_event_name(self, mocker):
         ev = _make_event(mocker, "Riunione", _dt())
-        update = _make_update(mocker, "Conferma")
+        update = _make_update(mocker, "confirm")
         ctx, _ = self._ctx_with_event(mocker, ev)
         _run(_dl_module.get_delete_confirm(update, ctx))
         final_reply = update.message.reply_text.call_args[0][0]
@@ -363,8 +361,6 @@ class TestGetDeleteConfirm:
         assert "eliminato" in final_reply
 
     def test_show_delete_confirm_contains_event_message(self, mocker):
-        """_show_delete_confirm is tested indirectly: get_delete_date calls it
-        when it finds a unique match, so we assert on its reply."""
         target = _dt(month=4, day=28, hour=10)
         _set_parse(target)
         ev = _make_event(mocker, "Riunione", target)
@@ -386,7 +382,7 @@ class TestGetDeleteConfirm:
             events={},
         )
         state = _run(
-            _dl_module.get_delete_confirm(_make_update(mocker, "Conferma"), ctx)
+            _dl_module.get_delete_confirm(_make_update(mocker, "confirm"), ctx)
         )
         assert state == ConversationHandler.END
         em.remove_event.assert_not_called()
@@ -395,7 +391,7 @@ class TestGetDeleteConfirm:
         ev = _make_event(mocker, "Riunione", _dt())
         ctx, _ = self._ctx_with_event(mocker, ev)
         mock_append = mocker.patch.object(_dl_module, "append_json")
-        _run(_dl_module.get_delete_confirm(_make_update(mocker, "Conferma"), ctx))
+        _run(_dl_module.get_delete_confirm(_make_update(mocker, "confirm"), ctx))
         mock_append.assert_called_once()
         call_args = mock_append.call_args[0]
         assert call_args[0] is ev
@@ -406,8 +402,6 @@ class TestGetDeleteConfirm:
 
 
 def test_cancel_delete_is_conversation_logics_cancel():
-    """cancel_delete must be the same object as conversation_logics.cancel
-    so that its behaviour is already covered by test_conversation_logics."""
     conv = sys.modules["src.modules.conversation_logics"]
     assert _dl_module.cancel_delete is conv.cancel
 

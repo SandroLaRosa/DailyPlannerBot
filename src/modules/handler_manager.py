@@ -11,6 +11,7 @@ from src.modules import (
 COMMAND_HANDLERS = [
     ("start", command_logics.start),
     ("help", command_logics.help),
+    ("today", recap_logics.today_recap),
     ("restart", command_logics.restart),
 ]
 

@@ -544,7 +544,7 @@ def test_show_recap_no_description_shows_dash(mocker):
 def test_get_confirm_annulla_ends_conversation(mocker):
 
     ctx = _make_context(mocker, user_data=_single_user_data("single"))
-    state = _run(get_confirm(_make_update(mocker, "Annulla"), ctx))
+    state = _run(get_confirm(_make_update(mocker, "cancel"), ctx))
     assert state == ConversationHandler.END
 
 
@@ -560,7 +560,7 @@ def test_get_confirm_single_creates_event_and_ends(mocker):
         mocker, user_data=_single_user_data("single"), bot_data={"event_manager": em}
     )
     assert (
-        _run(get_confirm(_make_update(mocker, "Conferma"), ctx))
+        _run(get_confirm(_make_update(mocker, "confirm"), ctx))
         == ConversationHandler.END
     )
     em.add_event.assert_called_once()
@@ -573,7 +573,7 @@ def test_get_confirm_recurring_creates_event_and_ends(mocker):
         mocker, user_data=_single_user_data("recurring"), bot_data={"event_manager": em}
     )
     assert (
-        _run(get_confirm(_make_update(mocker, "Conferma"), ctx))
+        _run(get_confirm(_make_update(mocker, "confirm"), ctx))
         == ConversationHandler.END
     )
     em.add_event.assert_called_once()
@@ -586,7 +586,7 @@ def test_get_confirm_reminder_creates_event_and_ends(mocker):
         mocker, user_data=_single_user_data("reminder"), bot_data={"event_manager": em}
     )
     assert (
-        _run(get_confirm(_make_update(mocker, "Conferma"), ctx))
+        _run(get_confirm(_make_update(mocker, "confirm"), ctx))
         == ConversationHandler.END
     )
     em.add_event.assert_called_once()

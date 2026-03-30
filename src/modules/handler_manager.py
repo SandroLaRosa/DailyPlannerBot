@@ -3,6 +3,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from src.modules import (
     command_logics,
     conversation_logics,
+    delete_logics,
     message_logics,
     recap_logics,
 )
@@ -10,6 +11,7 @@ from src.modules import (
 COMMAND_HANDLERS = [
     ("start", command_logics.start),
     ("help", command_logics.help),
+    ("today", recap_logics.today_recap),
     ("restart", command_logics.restart),
 ]
 
@@ -29,6 +31,7 @@ MESSAGE_HANDLERS = [
 CONVERSATION_HANDLERS = [
     conversation_logics.add_event_handler,
     recap_logics.recap_handler,
+    delete_logics.delete_event_handler,
 ]
 
 

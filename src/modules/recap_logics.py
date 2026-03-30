@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from datetime import datetime as _dt
 
 from telegram import ReplyKeyboardRemove, Update
 from telegram.ext import (
@@ -13,6 +14,7 @@ from telegram.ext import (
 
 from src.classes.event_manager import EventManager
 from src.modules.conversation_logics import _parse_future_dt
+from src.modules.timezone_logics import TZ
 
 (RECAP_DATE,) = range(1)
 
@@ -78,3 +80,21 @@ def recap_handler() -> ConversationHandler:
         },
         fallbacks=[CommandHandler("annulla", cancel_recap)],
     )
+
+
+async def today_recap(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Invia il recap degli eventi di oggi senza chiedere la data."""
+    assert update.message and update.effective_chat and update.effective_user
+
+    today = _dt.now(TZ).date()
+    em: EventManager = context.bot_data["event_manager"]
+    matches = _events_on_date(em, today)
+
+    if not matches:
+        await update.message.reply_text(
+            f"Nessun evento trovato per oggi ({today.strftime('%d/%m/%Y')})."
+        )
+    else:
+        header = f"📅 Eventi di oggi ({today.strftime('%d/%m/%Y')}):\n"
+        body = "\n\n".join(f"{i}. {msg}" for i, msg in enumerate(matches, start=1))
+        await update.message.reply_text(header + body)

@@ -59,17 +59,17 @@ Qualora il processo venisse arrestato, si suggerisce di usare il comando /restar
 
 ### Alcuni comandi disponibili in chat:
 
-- /start            :   Comando che avvia il bot
-- /help             :   Comando che stampa un elenco dei comandi disponibili
-- /new              :   Avvio di una conversazione alla fine della quale viene creato un evento di un dato tipo
-- /delete           :   Avvio di una conversazione che alla fine deschedula un dato evento.
-- /today            :   Restituisce una lista degli eventi in programma per oggi
-- /recap            :   Avvio di una conversazione alla fine della quale viene stampata una lista degli eventi di un dato giorno
-- /restart          :   Reset di una conversazione dopo che il bot è crashato
+- **/start**            :   Comando che avvia il bot
+- **/help**             :   Comando che stampa un elenco dei comandi disponibili
+- **/new**              :   Avvio di una conversazione alla fine della quale viene creato un evento di un dato tipo
+- **/delete**           :   Avvio di una conversazione che alla fine deschedula un dato evento.
+- **/today**            :   Restituisce una lista degli eventi in programma per oggi
+- **/recap**            :   Avvio di una conversazione alla fine della quale viene stampata una lista degli eventi di un dato giorno
+- **/restart**          :   Reset di una conversazione dopo che il bot è crashato
 
 ---
 ### Contributing
 
 Sviluppato e mantenuto da:
-Alessandro La Rosa
-Flavio Miccichè
+- Alessandro La Rosa
+- Flavio Miccichè

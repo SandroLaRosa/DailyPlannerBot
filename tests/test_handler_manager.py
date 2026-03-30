@@ -25,6 +25,7 @@ def _stub_modules(mocker):
         "src.modules.lang_logics": mocker.MagicMock(MSG={"unsupported": {}}),
         "src.modules.notify": mocker.MagicMock(),
         "src.modules.timezone_logics": mocker.MagicMock(),
+        "src.modules.delete_logics": mocker.MagicMock(),
         "src.classes.event_manager": mocker.MagicMock(),
         "src.classes.event": mocker.MagicMock(),
     }

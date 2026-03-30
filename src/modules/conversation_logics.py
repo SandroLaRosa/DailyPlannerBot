@@ -53,7 +53,7 @@ PERIOD_KEY = ReplyKeyboardMarkup(
 )
 
 CONFIRM_KEY = ReplyKeyboardMarkup(
-    [["Conferma", "Annulla"]],
+    [["confirm", "cancel"]],
     one_time_keyboard=True,
     resize_keyboard=True,
 )
@@ -393,15 +393,15 @@ async def get_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     assert update.effective_chat and update.message and update.effective_user
     risposta = _text(update).strip().lower()
 
-    if "annulla" in risposta:
+    if "cancel" in risposta:
         await update.message.reply_text(
             "Creazione annullata.", reply_markup=ReplyKeyboardRemove()
         )
         return ConversationHandler.END
 
-    if "conferma" not in risposta:
+    if "confirm" not in risposta:
         await update.message.reply_text(
-            "Scegli Conferma o Annulla.", reply_markup=CONFIRM_KEY
+            "Scegli Confirm o Cancel.\n(conferma o annulla)", reply_markup=CONFIRM_KEY
         )
         return CONFIRM
 
@@ -451,7 +451,7 @@ async def cancel(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> int:
 
 def add_event_handler() -> ConversationHandler:
     return ConversationHandler(
-        entry_points=[CommandHandler("crea_evento", start_event_creation)],
+        entry_points=[CommandHandler("new", start_event_creation)],
         states={
             NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_name)],
             EVENT_TYPE: [
@@ -474,5 +474,5 @@ def add_event_handler() -> ConversationHandler:
             ],
             CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_confirm)],
         },
-        fallbacks=[CommandHandler("annulla", cancel)],
+        fallbacks=[CommandHandler("cancel", cancel)],
     )

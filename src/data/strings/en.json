@@ -6,7 +6,7 @@
         "no_missed": "Perfect, no event was missed."
     },
     "help":{
-        "command_list": "Those are the command i support:\n\\restart,\t to reset the bot after a server issue.\n\\new,\t to create a new event.\n\\delete, to cancel an event.\\recap,\t to receive a list for events of a specific date."
+        "command_list": "Those are the command i support:\n\\restart,\t to reset the bot after a server issue.\n\\new,\t to create a new event.\n\\delete,\t to cancel an event.\n\\Today,\t gives you a recap of today events.\n\\recap,\t to receive a list for events of a specific date."
     },
     "restart":{
         "begin":"━━━━━ 🔄 RESTART ━━━━━",
